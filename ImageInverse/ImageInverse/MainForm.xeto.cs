@@ -105,7 +105,13 @@ namespace ImageInverse
                     secondXInput,
                     new Label { Text = "Y", VerticalAlignment = VerticalAlignment.Center },
                     secondYInput,
+                }
+            };
 
+            var thirdPointRow = new StackLayout {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8,
+                Items = {
                     constantLabel,
                     constant,
 
@@ -128,12 +134,12 @@ namespace ImageInverse
                     )
                 }
             };
-
+            // { topBar, firstPointRow, secondPointRow, thirdPointRow, imagesTable }
             Content = new StackLayout
             {
                 Padding = 10,
                 Spacing = 10,
-                Items = { topBar, firstPointRow, secondPointRow, imagesTable }
+                Items = { topBar, firstPointRow, secondPointRow, thirdPointRow, imagesTable }
             };
 
             SetMode(ImageProcessingMode.Invert);
@@ -245,7 +251,7 @@ namespace ImageInverse
                 Value = 0,
                 Increment = 1,
                 DecimalPlaces = 0,
-                Width = 100
+                Width = 160
             };
         }
 
@@ -253,7 +259,7 @@ namespace ImageInverse
         {
             new AboutDialog()
             {
-                Version = "2.0.0",
+                Version = "2.0.1",
                 Developers = new[] { "Dinar Dusov MO-401B" },
                 ProgramDescription = "Program for image processing. Powered by C# and Eto.",
                 ProgramName = "Image Processing"
