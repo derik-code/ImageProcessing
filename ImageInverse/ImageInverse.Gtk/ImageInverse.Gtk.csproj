@@ -1,16 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	
+
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ImageInverse\ImageInverse.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Eto.Platform.Gtk" Version="2.11.0" />
   </ItemGroup>
-	
+
 </Project>
