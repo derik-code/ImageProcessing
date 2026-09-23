@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form
+	xmlns="http://schema.picoe.ca/eto.forms" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:ImageLightening;assembly=ImageLightening"
+	Title="My Eto Form"
+	MinimumSize="200,200"
+	Padding="10"
+	>
+<Form.Menu>
+		<MenuBar>
+			<MenuBar.QuitItem>
+				<ButtonMenuItem Text="Quit" Shortcut="CommonModifier+Q" Click="HandleQuit" />
+			</MenuBar.QuitItem>
+			<MenuBar.AboutItem>
+				<ButtonMenuItem Text="About..." Click="HandleAbout" />
+			</MenuBar.AboutItem>
+		</MenuBar>
+	</Form.Menu>
+</Form>

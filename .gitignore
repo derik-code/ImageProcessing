@@ -1,0 +1,132 @@
+## ---------------------------------------------------------------------------
+## .NET / Visual Studio
+## ---------------------------------------------------------------------------
+
+# Папки сборки
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Файлы Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.rsuser
+
+# Кэш и результаты тестов
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+coverage*.json
+coverage*.xml
+coverage*.info
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Публикация
+publish/
+*.publishsettings
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+## ---------------------------------------------------------------------------
+## Rider / JetBrains
+## ---------------------------------------------------------------------------
+
+.idea/
+*.sln.iml
+*.DotSettings.user
+
+## ---------------------------------------------------------------------------
+## VS Code
+## ---------------------------------------------------------------------------
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json
+
+## ---------------------------------------------------------------------------
+## Mono / Xamarin / GTK
+## ---------------------------------------------------------------------------
+
+mono_crash.*.json
+*.pidb
+*.pdb
+*.mdb
+*.dll.config
+*.exe.config
+
+## ---------------------------------------------------------------------------
+## ОС
+## ---------------------------------------------------------------------------
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+## ---------------------------------------------------------------------------
+## Прочее
+## ---------------------------------------------------------------------------
+
+# Временные файлы редакторов
+*.swp
+*.swo
+*~
+
+# Локальные конфиги
+appsettings.local.json
+launchSettings.local.json
