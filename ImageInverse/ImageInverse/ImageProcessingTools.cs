@@ -1,6 +1,8 @@
 using Eto.Drawing;
 
-public class ImageProcessingTools
+namespace ImageInverse
+{
+public static class ImageProcessingTools
 {
     public static Bitmap Invert(Bitmap src, int firstX, int firstY, int secondX, int secondY)
     {
@@ -112,4 +114,5 @@ public class ImageProcessingTools
 
         return dst;
     }
+}
 }

@@ -1,69 +1,52 @@
 ﻿using System;
 using Eto.Forms;
 using Eto.Drawing;
-using Eto.Serialization.Xaml;
+using System.Collections;
 
 namespace ImageInverse
 {
     public class MainForm : Form
     {
         private readonly Size maxImageSize = new Size(380, 380);
-        private Bitmap selectedBitmap;
+        private Bitmap? selectedBitmap;
         private NumericStepper firstXInput;
         private NumericStepper firstYInput;
         private NumericStepper secondXInput;
         private NumericStepper secondYInput;
         private NumericStepper constant;
         private NumericStepper increment;
-        public enum ImageProcessingMode
-        {
-            Invert,       // Инверсия цвета
-            Grayscale,    // Оттенки серого
-            Lighten       // Осветление
-        }
-        private ImageProcessingMode _currentMode = ImageProcessingMode.Invert;
         private ImageView imageOriginal;
-        ImageView imageResult;
-        private Bitmap bitmapResult;
-        Label constantLabel;
-        Label incrementLabel;
+        private ImageView imageResult;
+        private Bitmap? bitmapResult;
+        private Label constantLabel;
+        private Label incrementLabel;
+        private readonly ImageProcessingService processingService =
+            new ImageProcessingService();
+
+        private ImageProcessingMode currentMode =
+            ImageProcessingMode.Invert;
+
         public MainForm()
         {
-            XamlReader.Load(this);
-            Title = "Image Inverse";
+            Title = "Image Processing";
             ClientSize = new Size(820, 640);
+
+            Menu = CreateMenu();
 
             imageOriginal = new ImageView { Size = maxImageSize };
             imageResult = new ImageView { Size = maxImageSize };
 
-            RadioMenuItem invertMode = new RadioMenuItem { Text = "Invert" };
-            RadioMenuItem grayscaleMode = new RadioMenuItem { Text = "Grayscale" };
-            RadioMenuItem lightenMode = new RadioMenuItem { Text = "Lighten" };
-            invertMode.Checked = true;
-
-            invertMode.Click += (s, e) => SetMode(ImageProcessingMode.Invert);
-            grayscaleMode.Click += (s, e) => SetMode(ImageProcessingMode.Grayscale);
-            lightenMode.Click += (s, e) => SetMode(ImageProcessingMode.Lighten);
-
-            SubMenuItem modMenu = new SubMenuItem
-            {
-                Text = "Mods",
-                Items = { invertMode, grayscaleMode, lightenMode }
-            };
-
-            Menu = new MenuBar { Items = { modMenu } };
-
-            Button selectImageButton = new Button
+            var selectImageButton = new Button
             {
                 Text = "Select",
-                Command = new Command((s, e) => SelectImage(imageOriginal, imageResult)),
+                Command = new Command((s, e) => SelectImage()),
                 Size = new Size(120, 32)
             };
 
-            Button processButton = new Button
+            var processButton = new Button
             {
                 Text = "Process",
-                Command = new Command((s, e) => inverseButtonLogic()),
+                Command = new Command((s, e) => ProcessImage()),
                 Size = new Size(120, 32)
             };
 
@@ -158,14 +141,99 @@ namespace ImageInverse
 
         private void SetMode(ImageProcessingMode mode)
         {
-            _currentMode = mode;
+            currentMode = mode;
 
-            bool isLighten = mode == ImageProcessingMode.Lighten;
+            bool showLightenOptions =
+                mode == ImageProcessingMode.Lighten;
 
-            constantLabel.Visible = isLighten;
-            constant.Visible = isLighten;
-            incrementLabel.Visible = isLighten;
-            increment.Visible = isLighten;
+            constantLabel.Visible = showLightenOptions;
+            constant.Visible = showLightenOptions;
+            incrementLabel.Visible = showLightenOptions;
+            increment.Visible = showLightenOptions;
+            switch (mode)
+            {
+                case ImageProcessingMode.Invert:
+                    Title = "Image Processing (Invert Mode)";
+                    break;
+                case ImageProcessingMode.Grayscale:
+                    Title = "Image Processing (Grayscale Mode)";
+                    break;
+                case ImageProcessingMode.Lighten:
+                    Title = "Image Processing (Lighten Mode)";
+                    break;
+            }
+        }
+
+        private MenuBar CreateMenu()
+        {
+            var invertMode = new RadioMenuItem { Text = "Invert", Checked = true };
+            var grayscaleMode = new RadioMenuItem { Text = "Grayscale" };
+            var lightenMode = new RadioMenuItem { Text = "Lighten" };
+
+            var quitButton = new ButtonMenuItem
+            {
+                Text = "Quit",
+                Shortcut = Keys.Application | Keys.Q,
+                Command = new Command((s, e) => HandleQuit(s, e))
+            };
+
+            var saveButton = new ButtonMenuItem {
+                Text = "Save Image...",
+                Shortcut = Keys.Control | Keys.S,
+                Command = new Command((s, e) => SaveImage())
+            };
+
+            var loadButton = new ButtonMenuItem {
+                Text = "Load Image...",
+                Shortcut = Keys.Control | Keys.L,
+                Command = new Command((s, e) => SelectImage())
+            };
+
+            var processButton = new ButtonMenuItem {
+                Text = "Start process",
+                Shortcut = Keys.Control | Keys.P,
+                Command = new Command((s, e) => ProcessImage())
+            };
+
+            invertMode.Click += (s, e) => SetMode(ImageProcessingMode.Invert);
+            grayscaleMode.Click += (s, e) => SetMode(ImageProcessingMode.Grayscale);
+            lightenMode.Click += (s, e) => SetMode(ImageProcessingMode.Lighten);
+
+            var modesMenu = new SubMenuItem
+            {
+                Text = "Modes",
+                Items = { invertMode, grayscaleMode, lightenMode }
+            };
+
+            var fileMenu = new SubMenuItem
+            {
+                Text = "File",
+                Items =
+                {   
+                    loadButton,
+                    processButton,
+                    saveButton,
+                    quitButton
+                }
+            };
+
+            var helpMenu = new SubMenuItem
+            {
+                Text = "Help",
+                Items =
+                {
+                    new ButtonMenuItem
+                    {
+                        Text = "About...",
+                        Command = new Command((s, e) => HandleAbout(s, e))
+                    }
+                }
+            };
+
+            return new MenuBar
+            {
+                Items = { fileMenu, modesMenu, helpMenu }
+            };
         }
 
         private static NumericStepper CreateCoordinateInput()
@@ -185,9 +253,10 @@ namespace ImageInverse
         {
             new AboutDialog()
             {
-                Version = "1.2.0",
+                Version = "2.0.0",
                 Developers = new[] { "Dinar Dusov MO-401B" },
-                ProgramDescription = "Program for Inversing images. Powered by C# and Eto."
+                ProgramDescription = "Program for image processing. Powered by C# and Eto.",
+                ProgramName = "Image Processing"
             }.ShowDialog(this);
         }
 
@@ -196,7 +265,7 @@ namespace ImageInverse
             Application.Instance.Quit();
         }
 
-        private void SelectImage(ImageView imageOriginal, ImageView imageResult)
+        private void SelectImage()
         {
             var dlg = new OpenFileDialog
             {
@@ -221,7 +290,7 @@ namespace ImageInverse
             input.Value = Math.Min(Math.Max(0, value), input.MaxValue);
         }
 
-        private static Bitmap ScaleToFit(Bitmap src, int maxWidth, int maxHeight)
+        private static Bitmap? ScaleToFit(Bitmap? src, int maxWidth, int maxHeight)
         {
             if (src == null)
                 return null;
@@ -240,42 +309,30 @@ namespace ImageInverse
             return dst;
         }
 
-        private void inverseButtonLogic()
+        private void ProcessImage()
         {
-            if (selectedBitmap != null)
-                switch (_currentMode)
-                {
-                    case ImageProcessingMode.Invert:
-                        bitmapResult = ImageProcessingTools.Invert(
-                            selectedBitmap,
-                            (int)firstXInput.Value,
-                            (int)firstYInput.Value,
-                            (int)secondXInput.Value,
-                            (int)secondYInput.Value);
-                        imageResult.Image = ScaleToFit(bitmapResult, maxImageSize.Width, maxImageSize.Height);
+            if (selectedBitmap == null)
+            {
+                MessageBox.Show(this, "Select an image first");
+                return;
+            }
 
-                        break;
-                    case ImageProcessingMode.Grayscale:
-                        bitmapResult = ImageProcessingTools.Grayscale(
-                                selectedBitmap,
-                                (int)firstXInput.Value,
-                                (int)firstYInput.Value,
-                                (int)secondXInput.Value,
-                                (int)secondYInput.Value);
-                        imageResult.Image = ScaleToFit(bitmapResult, maxImageSize.Width, maxImageSize.Height);
-                        break;
-                    case ImageProcessingMode.Lighten:
-                        bitmapResult = ImageProcessingTools.Lighten(
-                            selectedBitmap,
-                                (int)firstXInput.Value,
-                                (int)firstYInput.Value,
-                                (int)secondXInput.Value,
-                                (int)secondYInput.Value,
-                                (int)constant.Value);
-                        imageResult.Image = ScaleToFit(bitmapResult, maxImageSize.Width, maxImageSize.Height);
-                        break;
+            var region = new ImageRegion(
+                (int)firstXInput.Value,
+                (int)firstYInput.Value,
+                (int)secondXInput.Value,
+                (int)secondYInput.Value);
 
-                }
+            bitmapResult = processingService.Process(
+                selectedBitmap,
+                currentMode,
+                region,
+                (int)constant.Value);
+
+            imageResult.Image = ScaleToFit(
+                bitmapResult,
+                maxImageSize.Width,
+                maxImageSize.Height);
         }
 
         private void SaveImage()
