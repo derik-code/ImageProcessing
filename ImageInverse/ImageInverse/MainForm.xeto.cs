@@ -24,6 +24,7 @@ namespace ImageInverse
         private ImageProcessingMode _currentMode = ImageProcessingMode.Invert;
         private ImageView imageOriginal;
         ImageView imageResult;
+        private Bitmap bitmapResult;
         Label constantLabel;
         Label incrementLabel;
         public MainForm()
@@ -40,13 +41,9 @@ namespace ImageInverse
             RadioMenuItem lightenMode = new RadioMenuItem { Text = "Lighten" };
             invertMode.Checked = true;
 
-            invertMode.Click += (s, e) => _currentMode = ImageProcessingMode.Invert;
-            grayscaleMode.Click += (s, e) => _currentMode = ImageProcessingMode.Grayscale;
-            lightenMode.Click += (s, e) =>
-            {
-                _currentMode = ImageProcessingMode.Lighten;
-                switchLightenButtons();
-            };
+            invertMode.Click += (s, e) => SetMode(ImageProcessingMode.Invert);
+            grayscaleMode.Click += (s, e) => SetMode(ImageProcessingMode.Grayscale);
+            lightenMode.Click += (s, e) => SetMode(ImageProcessingMode.Lighten);
 
             SubMenuItem modMenu = new SubMenuItem
             {
@@ -70,6 +67,13 @@ namespace ImageInverse
                 Size = new Size(120, 32)
             };
 
+            Button saveResultButton = new Button
+            {
+                Text = "Save",
+                Command = new Command((s, e) => SaveImage()),
+                Size = new Size(120, 32)
+            };
+
             var topBar = new StackLayout
             {
                 Orientation = Orientation.Horizontal,
@@ -78,7 +82,8 @@ namespace ImageInverse
                 Items =
                 {
                     selectImageButton,
-                    processButton
+                    processButton,
+                    saveResultButton
                 }
             };
 
@@ -118,8 +123,10 @@ namespace ImageInverse
                     new Label { Text = "Y", VerticalAlignment = VerticalAlignment.Center },
                     secondYInput,
 
+                    constantLabel,
                     constant,
 
+                    incrementLabel,
                     increment
                 }
             };
@@ -145,25 +152,20 @@ namespace ImageInverse
                 Spacing = 10,
                 Items = { topBar, firstPointRow, secondPointRow, imagesTable }
             };
+
+            SetMode(ImageProcessingMode.Invert);
         }
 
-        private bool lightenButtons = false;
-        private void switchLightenButtons()
+        private void SetMode(ImageProcessingMode mode)
         {
-            if (!lightenButtons)
-            {
-                incrementLabel.Visible = true;
-                increment.Visible = true;
-                constant.Visible = true;
-                constantLabel.Visible = true;
-            }
-            else
-            {
-                incrementLabel.Visible = false;
-                increment.Visible = false;
-                constant.Visible = false;
-                constantLabel.Visible = false;
-            }
+            _currentMode = mode;
+
+            bool isLighten = mode == ImageProcessingMode.Lighten;
+
+            constantLabel.Visible = isLighten;
+            constant.Visible = isLighten;
+            incrementLabel.Visible = isLighten;
+            increment.Visible = isLighten;
         }
 
         private static NumericStepper CreateCoordinateInput()
@@ -244,36 +246,77 @@ namespace ImageInverse
                 switch (_currentMode)
                 {
                     case ImageProcessingMode.Invert:
-                        var inverted = ImageProcessingTools.Invert(
+                        bitmapResult = ImageProcessingTools.Invert(
                             selectedBitmap,
                             (int)firstXInput.Value,
                             (int)firstYInput.Value,
                             (int)secondXInput.Value,
                             (int)secondYInput.Value);
-                        imageResult.Image = ScaleToFit(inverted, maxImageSize.Width, maxImageSize.Height);
+                        imageResult.Image = ScaleToFit(bitmapResult, maxImageSize.Width, maxImageSize.Height);
 
                         break;
                     case ImageProcessingMode.Grayscale:
-                        var grayscaled = ImageProcessingTools.Grayscale(
+                        bitmapResult = ImageProcessingTools.Grayscale(
                                 selectedBitmap,
                                 (int)firstXInput.Value,
                                 (int)firstYInput.Value,
                                 (int)secondXInput.Value,
                                 (int)secondYInput.Value);
-                        imageResult.Image = ScaleToFit(grayscaled, maxImageSize.Width, maxImageSize.Height);
+                        imageResult.Image = ScaleToFit(bitmapResult, maxImageSize.Width, maxImageSize.Height);
                         break;
                     case ImageProcessingMode.Lighten:
-                        var lighten = ImageProcessingTools.Lighten(
+                        bitmapResult = ImageProcessingTools.Lighten(
                             selectedBitmap,
                                 (int)firstXInput.Value,
                                 (int)firstYInput.Value,
                                 (int)secondXInput.Value,
                                 (int)secondYInput.Value,
                                 (int)constant.Value);
-                        imageResult.Image = ScaleToFit(lighten, maxImageSize.Width, maxImageSize.Height);
+                        imageResult.Image = ScaleToFit(bitmapResult, maxImageSize.Width, maxImageSize.Height);
                         break;
 
                 }
+        }
+
+        private void SaveImage()
+        {
+            if (bitmapResult == null)
+            {
+                MessageBox.Show(this, "Result is empty");
+            }
+            else
+            {
+                var dlg = new SaveFileDialog
+                {
+                    Filters =
+                    {
+                        new FileFilter("PNG", "*.png"),
+                        new FileFilter("JPEG", "*.jpg"),
+                        new FileFilter("BMP", "*.bmp")
+                    }
+
+                };
+                if (dlg.ShowDialog(this) != DialogResult.Ok)
+                {
+                    MessageBox.Show(this, "Result not saved");
+                }
+                else
+                {
+                    string path = dlg.FileName;
+                    string ext = System.IO.Path.GetExtension(path);
+                    ImageFormat format = ext switch
+                    {
+                        ".png" => ImageFormat.Png,
+                        ".jpg" or ".jpeg" => ImageFormat.Jpeg,
+                        ".bmp" => ImageFormat.Bitmap,
+                        ".gif" => ImageFormat.Gif,
+                        ".tif" or ".tiff" => ImageFormat.Tiff,
+                        _ => ImageFormat.Png
+                    };
+                    bitmapResult.Save(path, format);
+                    MessageBox.Show(this, "Result saved");
+                }
+            }
         }
 
 
