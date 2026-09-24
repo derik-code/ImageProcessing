@@ -259,7 +259,7 @@ namespace ImageInverse
         {
             new AboutDialog()
             {
-                Version = "2.0.1",
+                Version = "2.1.0",
                 Developers = new[] { "Dinar Dusov MO-401B" },
                 ProgramDescription = "Program for image processing. Powered by C# and Eto.",
                 ProgramName = "Image Processing"
@@ -307,7 +307,7 @@ namespace ImageInverse
 
             int nw = Math.Max(1, (int)(w * scale));
             int nh = Math.Max(1, (int)(h * scale));
-            var dst = new Bitmap(nw, nh, PixelFormat.Format32bppRgb);
+            var dst = new Bitmap(nw, nh, PixelFormat.Format32bppRgba);
             using (var g = new Graphics(dst))
             {
                 g.DrawImage(src, new RectangleF(0, 0, nw, nh));

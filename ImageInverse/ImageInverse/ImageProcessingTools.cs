@@ -6,7 +6,7 @@ public static class ImageProcessingTools
 {
     public static Bitmap Invert(Bitmap src, int firstX, int firstY, int secondX, int secondY)
     {
-        var dst = new Bitmap(src.Width, src.Height, PixelFormat.Format32bppRgb);
+        var dst = new Bitmap(src.Width, src.Height, PixelFormat.Format32bppRgba);
 
         using (var g = new Graphics(dst))
             g.DrawImage(src, new RectangleF(0, 0, src.Width, src.Height));
@@ -41,7 +41,7 @@ public static class ImageProcessingTools
 
     public static Bitmap Grayscale(Bitmap src, int firstX, int firstY, int secondX, int secondY)
     {
-        var dst = new Bitmap(src.Width, src.Height, PixelFormat.Format32bppRgb);
+        var dst = new Bitmap(src.Width, src.Height, PixelFormat.Format32bppRgba);
 
         using (var g = new Graphics(dst))
             g.DrawImage(src, new RectangleF(0, 0, src.Width, src.Height));
@@ -82,7 +82,7 @@ public static class ImageProcessingTools
 
     public static Bitmap Lighten(Bitmap src, int firstX, int firstY, int secondX, int secondY, int constant)
     {   
-        var dst = new Bitmap(src.Width, src.Height, PixelFormat.Format32bppRgb);
+        var dst = new Bitmap(src.Width, src.Height, PixelFormat.Format32bppRgba);
 
         using (var g = new Graphics(dst))
             g.DrawImage(src, new RectangleF(0, 0, src.Width, src.Height));
