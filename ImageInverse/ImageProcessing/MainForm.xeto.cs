@@ -25,6 +25,9 @@ namespace ImageInverse
 
         private ImageProcessingMode currentMode =
             ImageProcessingMode.Invert;
+        RadioMenuItem invertMode;
+        RadioMenuItem grayscaleMode;
+        RadioMenuItem lightenMode;
 
         public MainForm()
         {
@@ -160,21 +163,27 @@ namespace ImageInverse
             {
                 case ImageProcessingMode.Invert:
                     Title = "Image Processing (Invert Mode)";
+                    grayscaleMode.Checked = false;
+                    lightenMode.Checked = false;
                     break;
                 case ImageProcessingMode.Grayscale:
                     Title = "Image Processing (Grayscale Mode)";
+                    lightenMode.Checked = false;
+                    invertMode.Checked = false;
                     break;
                 case ImageProcessingMode.Lighten:
                     Title = "Image Processing (Lighten Mode)";
+                    invertMode.Checked = false;
+                    grayscaleMode.Checked = false;
                     break;
             }
         }
 
         private MenuBar CreateMenu()
         {
-            var invertMode = new RadioMenuItem { Text = "Invert", Checked = true };
-            var grayscaleMode = new RadioMenuItem { Text = "Grayscale" };
-            var lightenMode = new RadioMenuItem { Text = "Lighten" };
+            invertMode = new RadioMenuItem { Text = "Invert", Checked = true };
+            grayscaleMode = new RadioMenuItem { Text = "Grayscale" };
+            lightenMode = new RadioMenuItem { Text = "Lighten" };
 
             var quitButton = new ButtonMenuItem
             {

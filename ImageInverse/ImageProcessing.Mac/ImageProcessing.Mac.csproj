@@ -8,7 +8,7 @@
   </PropertyGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\ImageInverse\ImageInverse.csproj" />
+    <ProjectReference Include="..\ImageProcessing\ImageProcessing.csproj" />
   </ItemGroup>
 	
   <ItemGroup>

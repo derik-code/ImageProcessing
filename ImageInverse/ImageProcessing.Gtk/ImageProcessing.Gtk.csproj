@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ImageInverse\ImageInverse.csproj" />
+    <ProjectReference Include="..\ImageProcessing\ImageProcessing.csproj" />
     <PackageReference Include="Eto.Platform.Gtk" Version="2.11.0" />
   </ItemGroup>
 
